@@ -14,11 +14,11 @@ List<ListMenu> menus = [
     icon: Icons.home,
   ),
   ListMenu(
-    title: "Transactions",
+    title: "Dashboard",
     icon: Icons.shop,
   ),
   ListMenu(
-    title: "Projects",
+    title: "Account",
     icon: Icons.person,
   ),
 ];

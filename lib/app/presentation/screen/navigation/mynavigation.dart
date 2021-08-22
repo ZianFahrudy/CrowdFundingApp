@@ -1,6 +1,6 @@
+import 'package:crowd_funding/app/presentation/screen/dashboard/dashboard_screen.dart';
 import 'package:crowd_funding/app/presentation/screen/home/home_screen.dart';
-import 'package:crowd_funding/app/presentation/screen/project/project_screen.dart';
-import 'package:crowd_funding/app/presentation/screen/transaction/transaction_screen.dart';
+import 'package:crowd_funding/app/presentation/screen/profile/profile_screen.dart';
 import 'package:crowd_funding/app/presentation/widget/bottombar/bottombar.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +20,7 @@ class _MyNavigationState extends State<MyNavigation> {
     });
   }
 
-  List<Widget> screen = [HomeScreen(), TransactionScreen(), ProjectScreen()];
+  List<Widget> screen = [HomeScreen(), DashboardScreen(), ProfileScreen()];
 
   @override
   Widget build(BuildContext context) {
