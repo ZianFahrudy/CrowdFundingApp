@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               TitileText(),
               Container(
-                height: Get.height * 0.43,
+                height: Get.height * 0.42,
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.circular(10)),
                 child: PagedListView(
@@ -249,7 +249,7 @@ class CampaignItem extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text("Terkumpul: Rp. $curentAmount"),
           ),
         ],
