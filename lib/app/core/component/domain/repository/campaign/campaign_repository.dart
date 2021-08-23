@@ -5,5 +5,6 @@ import 'package:dartz/dartz.dart';
 
 abstract class CampaignRepository {
   Stream<Either<Failure, CampaignListModel>> getCampaignList();
+  Stream<Either<Failure, CampaignListModel>> getCampaignListByUserId();
   Stream<Either<Failure, CampaignDetailModel>> campaignDetail(int id);
 }

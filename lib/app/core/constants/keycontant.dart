@@ -1,3 +1,4 @@
 class KeyConstant {
-  static const token = 'token-key';
+  static const token = 'KeyToken-secret';
+  static const userId = 'KeyUserID-secret';
 }

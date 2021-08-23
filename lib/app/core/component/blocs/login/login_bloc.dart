@@ -33,6 +33,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           yield LoginFailure(l.error);
         }, (value) async* {
           storage.write(KeyConstant.token, value.data!.token);
+          storage.write(KeyConstant.userId, value.data!.id);
           yield LoginSuccess();
         });
       }

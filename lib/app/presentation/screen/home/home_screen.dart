@@ -4,6 +4,7 @@ import 'package:crowd_funding/app/core/component/domain/models/response/campaign
 import 'package:crowd_funding/app/core/constants/constant.dart';
 import 'package:crowd_funding/app/core/di/injection.dart';
 import 'package:crowd_funding/app/presentation/screen/detail_campaign/detail_campaign_screen.dart';
+import 'package:crowd_funding/app/presentation/screen/home/local_widget/dashboard_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,6 +22,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final campaignListBloc = getIt<CampaignListBloc>();
   final PagingController<int, DataCampaignModel> pagingController =
       PagingController(firstPageKey: 0);
+
+  List<DataCampaignModel> campaignList = [];
 
   Future<void> _fetchPage(int pageKey) async {
     try {
@@ -42,7 +45,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   slug: event.data![index].slug,
                   userId: event.data![index].userId,
                   imageUrl: event.data![index].imageUrl));
+
           pagingController.appendLastPage(newItems);
+          setState(() {
+            campaignList = newItems.take(3).toList();
+          });
         }
       });
     } catch (error) {
@@ -60,64 +67,112 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () => Future.sync(() => pagingController.refresh()),
-        child: SafeArea(
-            child: SingleChildScrollView(
+    return RefreshIndicator(
+      onRefresh: () => Future.sync(() => pagingController.refresh()),
+      child: CustomScrollView(slivers: [
+        SliverPersistentHeader(
+            pinned: true,
+            delegate: DashboardAppBar(expandedHeight: 100 + kToolbarHeight)),
+        SliverToBoxAdapter(
           child: Column(
-            children: [
-              Container(
-                height: Get.height * 0.4,
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                decoration:
-                    BoxDecoration(color: Theme.of(context).primaryColor),
-                child: Column(
-                  children: [
-                    SizedBox(height: 20),
-                    ProfileCard(),
-                    SizedBox(height: 20),
-                    SerarchBarCustom(),
-                    CategoryCampaign()
-                  ],
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 50),
+                CategoryCampaign(),
+                TitileText(),
+                buildCampaignList(),
+                buildNewCampaignTitle(context),
+                buildNewCampaignList(context),
+              ]),
+        )
+      ]),
+    );
+  }
+
+  Column buildNewCampaignList(BuildContext context) {
+    return Column(
+      children: campaignList
+          .map((e) => Card(
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                child: Row(children: [
+                  Image.network(
+                    e.imageUrl != ''
+                        ? "${Constants.baseUrl}/${e.imageUrl}"
+                        : "http://stiepetrabitung.ac.id/wp-content/uploads/2021/03/placeholder.png",
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(e.name!,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText2!
+                                  .copyWith(fontWeight: FontWeight.bold)),
+                          Text(
+                            e.shortDescription!,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText2!
+                                .copyWith(color: Palette.greyColor),
+                            maxLines: 2,
+                          )
+                        ]),
+                  )
+                ]),
+              )))
+          .toList(),
+    );
+  }
+
+  Padding buildNewCampaignTitle(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Text(
+        "New Campaigns",
+        style: Theme.of(context).textTheme.headline6!.copyWith(
+            color: Palette.greyColor,
+            fontSize: 14,
+            fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Container buildCampaignList() {
+    return Container(
+      height: Get.height * 0.42,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: PagedListView(
+          scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          pagingController: pagingController,
+          builderDelegate: PagedChildBuilderDelegate<DataCampaignModel>(
+              itemBuilder: (context, item, i) {
+            return GestureDetector(
+              onTap: () => Get.to(() => DetailCampaignScreen(id: item.id!)),
+              child: Padding(
+                padding: EdgeInsets.only(left: i == 0 ? 20 : 15),
+                child: CampaignItem(
+                  imageUrl: item.imageUrl,
+                  name: item.name,
+                  goalAmount: item.goalAmount! < 100000 ? 0 : item.goalAmount,
+                  curentAmount:
+                      ((item.currentAmount! > 0) && (item.goalAmount == 0))
+                          ? 0
+                          : item.currentAmount,
                 ),
               ),
-              TitileText(),
-              Container(
-                height: Get.height * 0.42,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(10)),
-                child: PagedListView(
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    pagingController: pagingController,
-                    builderDelegate:
-                        PagedChildBuilderDelegate<DataCampaignModel>(
-                            itemBuilder: (context, item, i) {
-                      return GestureDetector(
-                        onTap: () =>
-                            Get.to(() => DetailCampaignScreen(id: item.id!)),
-                        child: Padding(
-                          padding: EdgeInsets.only(left: i == 0 ? 20 : 15),
-                          child: CampaignItem(
-                            imageUrl: item.imageUrl,
-                            name: item.name,
-                            goalAmount:
-                                item.goalAmount! < 100000 ? 0 : item.goalAmount,
-                            curentAmount: ((item.currentAmount! > 0) &&
-                                    (item.goalAmount == 0))
-                                ? 0
-                                : item.currentAmount,
-                          ),
-                        ),
-                      );
-                    })),
-              )
-            ],
-          ),
-        )),
-      ),
+            );
+          })),
     );
   }
 }
@@ -323,7 +378,8 @@ class CategoryCampaign extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -357,10 +413,11 @@ class CategoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 75,
-      height: 85,
+      width: 70,
+      height: 80,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: Palette.primaryColor),
         color: Colors.white,
       ),
       child: Column(
