@@ -8,7 +8,7 @@ class AppTheme {
       backgroundColor: Palette.backgroundColor,
       cardColor: Colors.white,
       primarySwatch: Colors.amber,
-      appBarTheme: AppBarTheme(backgroundColor: Colors.white),
+      appBarTheme: AppBarTheme(backgroundColor: Palette.primaryColor),
       canvasColor: Color.fromRGBO(246, 247, 255, 1),
       primaryColor: Palette.primaryColor,
       textTheme: TextTheme(

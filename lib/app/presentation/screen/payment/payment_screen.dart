@@ -1,6 +1,7 @@
 import 'package:crowd_funding/app/core/common/palette.dart';
 import 'package:crowd_funding/app/core/component/domain/models/response/checkout_model.dart';
 import 'package:crowd_funding/app/core/utility/url_launcher.dart';
+import 'package:crowd_funding/app/presentation/screen/navigation/mynavigation.dart';
 import 'package:crowd_funding/app/presentation/widget/button_widget/button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -49,10 +50,12 @@ class PaymentScreen extends StatelessWidget {
                     Launch.openUrl(url: transaction.data!.paymentUrl!)),
             SizedBox(height: 10),
             ButtonWidget(
-                text: "Fund other project",
+                text: "My Dashboard",
                 width: 150,
                 height: 45,
-                onPressed: () {}),
+                onPressed: () => Get.to(() => MyNavigation(
+                      index: 1,
+                    ))),
             Spacer(),
           ],
         ),

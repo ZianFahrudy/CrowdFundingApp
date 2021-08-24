@@ -1,10 +1,12 @@
 import 'package:crowd_funding/app/core/common/palette.dart';
 import 'package:crowd_funding/app/core/component/blocs/campaign/campaign_list_bloc.dart';
+import 'package:crowd_funding/app/core/component/blocs/user/get_userdata_bloc.dart';
 import 'package:crowd_funding/app/core/component/domain/models/response/campaign_list_model.dart';
 import 'package:crowd_funding/app/core/constants/constant.dart';
 import 'package:crowd_funding/app/core/di/injection.dart';
 import 'package:crowd_funding/app/presentation/screen/detail_campaign/detail_campaign_screen.dart';
 import 'package:crowd_funding/app/presentation/screen/home/local_widget/dashboard_appbar.dart';
+import 'package:crowd_funding/app/presentation/widget/loader_page/loading_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,6 +21,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GetUserDataBloc getUserBloc = getIt<GetUserDataBloc>();
+
   final campaignListBloc = getIt<CampaignListBloc>();
   final PagingController<int, DataCampaignModel> pagingController =
       PagingController(firstPageKey: 0);
@@ -62,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     pagingController.addPageRequestListener((pageKey) {
       _fetchPage(pageKey);
     });
+    getUserBloc.fetchUserData();
     super.initState();
   }
 
@@ -72,7 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
       child: CustomScrollView(slivers: [
         SliverPersistentHeader(
             pinned: true,
-            delegate: DashboardAppBar(expandedHeight: 100 + kToolbarHeight)),
+            delegate: DashboardAppBar(
+                expandedHeight: 100 + kToolbarHeight,
+                getUserBloc: getUserBloc)),
         SliverToBoxAdapter(
           child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -153,26 +160,33 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: PagedListView(
           scrollDirection: Axis.horizontal,
-          shrinkWrap: true,
           pagingController: pagingController,
           builderDelegate: PagedChildBuilderDelegate<DataCampaignModel>(
+              firstPageProgressIndicatorBuilder: (context) => LoadingPage(),
+              noItemsFoundIndicatorBuilder: (context) => Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(child: Text("Campaign still Empty")),
+                    ],
+                  ),
               itemBuilder: (context, item, i) {
-            return GestureDetector(
-              onTap: () => Get.to(() => DetailCampaignScreen(id: item.id!)),
-              child: Padding(
-                padding: EdgeInsets.only(left: i == 0 ? 20 : 15),
-                child: CampaignItem(
-                  imageUrl: item.imageUrl,
-                  name: item.name,
-                  goalAmount: item.goalAmount! < 100000 ? 0 : item.goalAmount,
-                  curentAmount:
-                      ((item.currentAmount! > 0) && (item.goalAmount == 0))
-                          ? 0
-                          : item.currentAmount,
-                ),
-              ),
-            );
-          })),
+                return GestureDetector(
+                  onTap: () => Get.to(() => DetailCampaignScreen(id: item.id!)),
+                  child: Padding(
+                    padding: EdgeInsets.only(left: i == 0 ? 20 : 15),
+                    child: CampaignItem(
+                      imageUrl: item.imageUrl,
+                      name: item.name,
+                      goalAmount:
+                          item.goalAmount! < 100000 ? 0 : item.goalAmount,
+                      curentAmount:
+                          ((item.currentAmount! > 0) && (item.goalAmount == 0))
+                              ? 0
+                              : item.currentAmount,
+                    ),
+                  ),
+                );
+              })),
     );
   }
 }
@@ -397,7 +411,7 @@ class CategoryCampaign extends StatelessWidget {
           ),
           CategoryItem(
             icon: Icons.animation,
-            title: "Lainnya",
+            title: "Bike",
           ),
         ],
       ),
@@ -414,7 +428,7 @@ class CategoryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 70,
-      height: 80,
+      height: 70,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
         border: Border.all(color: Palette.primaryColor),

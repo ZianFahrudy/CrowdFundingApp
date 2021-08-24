@@ -19,16 +19,20 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     CheckoutEvent event,
   ) async* {
     if (event is OnCheckoutEvent) {
-      yield CheckoutLoading();
+      if (event.body.amount! <= 0) {
+        yield CheckoutException();
+      } else {
+        yield CheckoutLoading();
 
-      final result = _repository.checkout(event.body);
+        final result = _repository.checkout(event.body);
 
-      await for (final eventRes in result) {
-        yield* eventRes.fold((l) async* {
-          yield CheckoutFailure(l.error);
-        }, (value) async* {
-          yield CheckoutSuccess(value);
-        });
+        await for (final eventRes in result) {
+          yield* eventRes.fold((l) async* {
+            yield CheckoutFailure(l.error);
+          }, (value) async* {
+            yield CheckoutSuccess(value);
+          });
+        }
       }
     }
   }

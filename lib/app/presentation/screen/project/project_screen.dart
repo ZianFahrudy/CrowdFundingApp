@@ -63,6 +63,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
     if (value == 0) {
       Get.to(() => EditCampaignScreen(
             id: item.id!,
+            projectPagingController: _pagingController,
           ));
     } else {
       print("Delete");
@@ -73,7 +74,9 @@ class _ProjectScreenState extends State<ProjectScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
-          onPressed: () => Get.to(() => CreateCampaignScreen()),
+          onPressed: () => Get.to(() => CreateCampaignScreen(
+                projectPagingController: _pagingController,
+              )),
           child: Icon(Icons.add),
         ),
         body: PagedListView(
@@ -84,7 +87,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
                 noItemsFoundIndicatorBuilder: (context) {
                   return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [Text("Transactions still empty!")]);
+                      children: [Text("Projects still empty!")]);
                 },
                 itemBuilder: (context, item, i) {
                   return GestureDetector(
@@ -120,7 +123,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
                                         .copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   Text(
-                                    "Rp. ${item.shortDescription}",
+                                    item.shortDescription!,
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyText2!
@@ -138,9 +141,6 @@ class _ProjectScreenState extends State<ProjectScreen> {
                                       PopupMenuItem(
                                           value: 1, child: Text("Delete")),
                                     ]),
-                            // IconButton(
-                            //     onPressed: () {},
-                            //     icon: Icon(Icons.more_vert_rounded))
                           ],
                         ),
                       ),

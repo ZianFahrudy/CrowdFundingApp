@@ -43,7 +43,7 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
                 width: double.infinity,
                 height: 45,
                 color: Palette.orangeColor,
-                onPressed: () => Get.to(() => RegisterScreen()))
+                onPressed: () => Get.to(() => RegisterScreen())),
           ]),
         ),
       ],

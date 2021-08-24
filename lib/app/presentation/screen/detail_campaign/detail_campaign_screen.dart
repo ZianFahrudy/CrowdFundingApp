@@ -60,6 +60,11 @@ class _DetailCampaignScreenState extends State<DetailCampaignScreen> {
           });
         } else if (state is CheckoutLoading) {
           Get.back();
+        } else if (state is CheckoutException) {
+          Get.snackbar("Oopss", "Amount tidak boleh kosoong",
+              snackPosition: SnackPosition.TOP,
+              backgroundColor: Palette.redColor,
+              colorText: Colors.white);
         }
       }, builder: (context, state) {
         return Scaffold(
